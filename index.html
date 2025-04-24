@@ -24,6 +24,7 @@
       justify-content: center;
       gap: 1rem;
       margin-bottom: 1rem;
+      flex-wrap: wrap;
     }
     .options label {
       background: #fff;
@@ -76,6 +77,21 @@
 
     let correctAnswer = 0;
 
+    function playSound(freq, duration = 0.5) {
+      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const oscillator = audioCtx.createOscillator();
+      const gainNode = audioCtx.createGain();
+
+      oscillator.type = 'sine';
+      oscillator.frequency.setValueAtTime(freq, audioCtx.currentTime);
+      oscillator.connect(gainNode);
+      gainNode.connect(audioCtx.destination);
+
+      oscillator.start();
+      gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+      oscillator.stop(audioCtx.currentTime + duration);
+    }
+
     function generateQuestion() {
       const a = Math.floor(Math.random() * 11);
       const b = Math.floor(Math.random() * 11);
@@ -97,6 +113,8 @@
           <label for="${id}">${val}</label>
         `;
       });
+
+      messageEl.textContent = '';
     }
 
     form.addEventListener('submit', function (e) {
@@ -111,9 +129,12 @@
       if (userAnswer === correctAnswer) {
         messageEl.textContent = 'You got it!';
         messageEl.style.color = 'green';
+        playSound(523.25); // C5
+        setTimeout(generateQuestion, 3000);
       } else {
         messageEl.textContent = 'Try again.';
         messageEl.style.color = 'red';
+        playSound(200); // buzzer sound
       }
     });
 
