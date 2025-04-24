@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Math Quiz</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 2rem;
+      background: #f9f9f9;
+      text-align: center;
+    }
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+    .question {
+      font-size: 1.5rem;
+      margin: 1rem 0;
+    }
+    .options {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    .options label {
+      background: #fff;
+      padding: 0.5rem 1rem;
+      border: 2px solid #ccc;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .options input[type="radio"] {
+      display: none;
+    }
+    .options input[type="radio"]:checked + label {
+      border-color: #4CAF50;
+      background: #e6ffe6;
+    }
+    .submit-btn {
+      background: #4CAF50;
+      color: white;
+      border: none;
+      padding: 0.5rem 1.5rem;
+      font-size: 1rem;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .message {
+      font-size: 1.2rem;
+      margin-top: 1rem;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Simple Math Quiz</h1>
+  <div class="question" id="question">What is 1 + 1?</div>
+
+  <form id="quizForm">
+    <div class="options" id="options"></div>
+    <button type="submit" class="submit-btn">Submit</button>
+  </form>
+
+  <div class="message" id="message"></div>
+
+  <script>
+    const questionEl = document.getElementById('question');
+    const optionsEl = document.getElementById('options');
+    const messageEl = document.getElementById('message');
+    const form = document.getElementById('quizForm');
+
+    let correctAnswer = 0;
+
+    function generateQuestion() {
+      const a = Math.floor(Math.random() * 11);
+      const b = Math.floor(Math.random() * 11);
+      correctAnswer = a + b;
+      questionEl.textContent = `What is ${a} + ${b}?`;
+
+      const answers = new Set([correctAnswer]);
+      while (answers.size < 4) {
+        answers.add(Math.floor(Math.random() * 21));
+      }
+
+      const shuffled = [...answers].sort(() => Math.random() - 0.5);
+
+      optionsEl.innerHTML = '';
+      shuffled.forEach((val, idx) => {
+        const id = `option${idx}`;
+        optionsEl.innerHTML += `
+          <input type="radio" id="${id}" name="answer" value="${val}">
+          <label for="${id}">${val}</label>
+        `;
+      });
+    }
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      const selected = document.querySelector('input[name="answer"]:checked');
+      if (!selected) {
+        messageEl.textContent = 'Please select an answer.';
+        return;
+      }
+
+      const userAnswer = parseInt(selected.value);
+      if (userAnswer === correctAnswer) {
+        messageEl.textContent = 'You got it!';
+        messageEl.style.color = 'green';
+      } else {
+        messageEl.textContent = 'Try again.';
+        messageEl.style.color = 'red';
+      }
+    });
+
+    generateQuestion();
+  </script>
+
+</body>
+</html>
